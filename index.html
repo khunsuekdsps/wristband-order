@@ -526,7 +526,7 @@ function submitOrder(){
   var tot=mode==='single'?cs(qty):cb(bQty);
   var orderNum='KS-'+String(Date.now()).slice(-4);
   document.getElementById('suc-order-id').textContent=orderNum;
-  var GAS='YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+  var GAS='https://script.google.com/macros/s/AKfycbwN2ClLyOqG36p6HKTwotE-Ux6e_8lqIK6DcphnH5y8teKNTEy5ho_Bij9XirM5olVK/exec';
   fetch(GAS,{method:'POST',mode:'no-cors',body:JSON.stringify({
     orderDate:new Date().toLocaleString('th-TH'),orderId:orderNum,
     orderType:mode==='single'?'แบบชิ้น':'แบบชุด',
