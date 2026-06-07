@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ตรวจสอบสถานะพัสดุ — ขุนศึก ท.ศ.พ.</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f8f6f2;--bg2:#fff;--ink:#181818;--ink2:#555;--ink3:#999;--g:#1a5e35;--y:#e8a81a;--border:#e4e1da;--r:10px}
+body{font-family:'IBM Plex Sans Thai',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+.wrap{max-width:460px;margin:0 auto;padding:0 0 3rem}
+.accent{position:fixed;top:0;left:0;right:0;height:6px;z-index:999;background:#1a5e35;overflow:hidden}
+.accent::before{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;
+  background:linear-gradient(90deg,transparent,#1a5e35 15%,#e8a81a 40%,#fff 55%,#e8a81a 70%,#1a5e35 90%,transparent);
+  animation:arun 1.8s linear infinite}
+@keyframes arun{0%{left:-100%}100%{left:200%}}
+.hero{background:#080808;padding:2rem 1.25rem 1.75rem;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(200,146,10,0.1) 0%,transparent 65%);pointer-events:none}
+.hero-icon{font-size:36px;margin-bottom:.6rem;display:block;position:relative;z-index:1}
+.hero-title{font-size:18px;font-weight:600;color:#fff;position:relative;z-index:1;margin-bottom:4px}
+.hero-sub{font-size:12px;color:rgba(255,255,255,.45);position:relative;z-index:1}
+.wave{overflow:hidden;line-height:0;background:#080808}
+.wave svg{display:block;width:100%}
+.form-wrap{padding:1.5rem 1.25rem 0}
+.search-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px 16px;margin-bottom:1rem}
+.search-title{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.fi{width:100%;font-size:14px;padding:11px 13px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg);color:var(--ink);font-family:inherit;transition:border-color .14s;margin-bottom:10px}
+.fi:focus{outline:none;border-color:var(--g)}
+.search-btn{width:100%;padding:13px;background:var(--ink);color:#fff;border:none;border-radius:var(--r);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .14s;display:flex;align-items:center;justify-content:center;gap:8px}
+.search-btn:hover{background:#333}
+.search-btn:disabled{opacity:.45;cursor:not-allowed}
+.result-wrap{display:none;margin-top:.5rem}
+.result-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:10px}
+.result-header{background:var(--ink);padding:10px 14px;display:flex;align-items:center;justify-content:space-between}
+.result-name{font-size:13px;font-weight:600;color:#e8a81a;letter-spacing:.02em}
+.result-count{font-size:11px;color:rgba(255,255,255,.5)}
+.order-item{padding:14px;border-bottom:1px solid var(--border)}
+.order-item:last-child{border-bottom:none}
+.order-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.order-label{font-size:11px;color:var(--ink3)}
+.order-val{font-size:12px;font-weight:500;color:var(--ink);text-align:right}
+.order-divider{height:.5px;background:var(--border);margin:8px 0}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500}
+.badge.waiting{background:#FFF9E6;color:#856404}
+.badge.checked{background:#E6F0FF;color:#0C447C}
+.badge.packing{background:#FFF0E6;color:#7D3C0B}
+.badge.shipped{background:#EAF3DE;color:#27500A}
+.badge.cancel{background:#FCEBEB;color:#A32D2D}
+.tracking-box{background:#f0f8f4;border:1px solid #c8e6d4;border-radius:8px;padding:10px 12px;margin-top:8px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.tracking-num{font-size:14px;font-weight:600;color:var(--g);letter-spacing:.04em}
+.copy-track-btn{display:flex;align-items:center;gap:4px;padding:5px 10px;background:var(--g);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap}
+.flash-lnk{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--g);text-decoration:none;margin-top:6px;font-weight:500;padding:7px 10px;background:#e8f5ee;border:1px solid #c8e6d4;border-radius:8px;transition:background .13s}
+.flash-lnk:hover{background:#d4eddb}
+.no-tracking{font-size:12px;color:var(--ink3);font-style:italic;margin-top:6px}
+.not-found{text-align:center;padding:2rem 1rem;background:var(--bg2);border:1px solid var(--border);border-radius:12px}
+.not-found .nf-icon{font-size:36px;margin-bottom:10px;display:block}
+.not-found p{font-size:13px;color:var(--ink2);line-height:1.8}
+.contact-box{text-align:center;padding:14px;background:var(--ink);border-radius:var(--r);margin-top:1rem}
+.contact-box p{font-size:12px;color:rgba(255,255,255,.55);line-height:1.9}
+.contact-box strong{color:var(--y);font-weight:500}
+.contact-box a{color:var(--y);text-decoration:none}
+.loading-text{text-align:center;padding:1.5rem;font-size:13px;color:var(--ink3)}
+.err-msg{font-size:12px;color:#c0392b;margin-top:6px;display:none;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="accent"></div>
+<div class="hero">
+    <span class="hero-icon">&#128230;</span>
+  <div class="hero-title">ตรวจสอบสถานะพัสดุ</div>
+  <div class="hero-sub">ขุนศึก ท.ศ.พ. &nbsp;|&nbsp; Wristband 2026</div>
+</div>
+<div class="wave">
+  <svg viewBox="0 0 460 28" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0 28 L0 12 Q115 0 230 12 Q345 24 460 8 L460 28 Z" fill="#f8f6f2"/>
+  </svg>
+</div>
+<div class="form-wrap">
+  <div class="search-card">
+    <div class="search-title">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      ค้นหาด้วยชื่อที่ลงทะเบียนไว้
+    </div>
+    <input class="fi" type="text" id="search-fname" placeholder="ชื่อ *" style="margin-bottom:6px">
+    <input class="fi" type="text" id="search-lname" placeholder="นามสกุล (ถ้ามีชื่อซ้ำ)" style="margin-bottom:8px">
+    <div class="err-msg" id="err-msg">กรุณากรอกชื่อ</div>
+    <button class="search-btn" id="search-btn" onclick="doSearch()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      ตรวจสอบสถานะ
+    </button>
+  </div>
+  <div class="result-wrap" id="result-wrap"></div>
+  <div class="contact-box">
+    <p>สอบถามเพิ่มเติมได้ที่<br>
+    <strong><a href="https://www.facebook.com/khunsuekdsps/" target="_blank">&#128241; Facebook : ขุนศึกเทพศิรินทร์ พุแค</a></strong><br>
+    แจ้งชื่อ-นามสกุลเพื่อตรวจสอบออเดอร์</p>
+  </div>
+</div>
+</div>
+<script>
+var GAS_URL='https://script.google.com/macros/s/AKfycbxgt-oWnmZB3hI-8wJk2LD_XgX52JoZRlH4EiGVRMGpWlUqfXbd6covE4LgBWRmVaSf/exec';
+function getBadge(s){
+  var m={'โอนแล้ว':['waiting','⏳ รอตรวจสลิป'],'ตรวจสลิปแล้ว':['checked','✅ ตรวจสลิปแล้ว'],'กำลังแพ็ค':['packing','📦 กำลังแพ็ค'],'จัดส่งแล้ว':['shipped','🚚 จัดส่งแล้ว!'],'ยกเลิก':['cancel','❌ ยกเลิก']};
+  var d=m[s]||['waiting','⏳ '+(s||'รอดำเนินการ')];
+  return '<span class="badge '+d[0]+'">'+d[1]+'</span>';
+}
+function copyTrk(num,id){
+  navigator.clipboard.writeText(num).then(function(){
+    var b=document.getElementById(id);
+    if(b){b.textContent='✓ คัดลอก';setTimeout(function(){b.textContent='คัดลอก';},2000);}
+  });
+}
+function renderResults(orders,name){
+  var wrap=document.getElementById('result-wrap');
+  wrap.style.display='block';
+  if(!orders||orders.length===0){
+    wrap.innerHTML='<div class="not-found"><span class="nf-icon">🔍</span><p>ไม่พบข้อมูลสำหรับชื่อ <strong>'+name+'</strong><br>กรุณาตรวจสอบชื่อให้ถูกต้อง<br>หรือติดต่อผ่านเพจ</p></div>';
+    return;
+  }
+  // จัดกลุ่มตามชื่อเต็ม
+  var groups={};
+  var groupOrder=[];
+  for(var i=0;i<orders.length;i++){
+    var fullName=(orders[i].name||'').toString().trim();
+    if(!groups[fullName]){groups[fullName]=[];groupOrder.push(fullName);}
+    groups[fullName].push(orders[i]);
+  }
+  var html='';
+  for(var g=0;g<groupOrder.length;g++){
+    var gName=groupOrder[g];
+    var gOrders=groups[gName];
+    html+='<div class="result-card" style="margin-bottom:10px"><div class="result-header"><span class="result-name">'+gName+'</span><span class="result-count">'+gOrders.length+' ออเดอร์</span></div>';
+    for(var i=0;i<gOrders.length;i++){
+      var o=gOrders[i];
+    var trkHtml='';
+    var trk=(o.tracking||'').toString().trim();
+    if(trk&&trk!==''&&trk!=='-'){
+      var bid='cp'+i;
+      trkHtml='<div class="tracking-box"><span class="tracking-num">'+trk+'</span><button class="copy-track-btn" id="'+bid+'" onclick="copyTrk(''+trk+'',''+bid+'')">คัดลอก</button></div>'
+        +'<a class="flash-link" href="https://www.flashexpress.co.th/tracking/?se='+trk+'" target="_blank">'
+        +'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>'
+        +'ติดตามพัสดุที่ Flash Express</a>';
+    } else {
+      trkHtml='<div class="no-tracking">ยังไม่มีเลขพัสดุ — ทีมงานจะอัปเดตเร็วๆ นี้</div>';
+    }
+    html+='<div class="order-item">'
+      +'<div class="order-row"><span class="order-label">วันที่สั่ง</span><span class="order-val">'+(o.date||'-')+'</span></div>'
+      +'<div class="order-row"><span class="order-label">จำนวน</span><span class="order-val">'+(o.qty||'-')+' ชิ้น</span></div>'
+      +'<div class="order-row"><span class="order-label">ยอดชำระ</span><span class="order-val">฿'+(o.total||'-')+'</span></div>'
+      +'<div class="order-divider"></div>'
+      +'<div class="order-row"><span class="order-label">สถานะ</span><span class="order-val">'+getBadge(o.status)+'</span></div>'
+      +trkHtml+'</div>';
+  }
+  html+='</div>';
+  wrap.innerHTML=html;
+}
+function doSearch(){
+  var fname=document.getElementById('search-fname').value.trim();
+  var lname=document.getElementById('search-lname').value.trim();
+  var errEl=document.getElementById('err-msg');
+  if(!fname){errEl.style.display='block';return;}
+  errEl.style.display='none';
+  var searchStr = lname ? fname+' '+lname : fname;
+  var btn=document.getElementById('search-btn');
+  btn.disabled=true;btn.textContent='กำลังค้นหา...';
+  document.getElementById('result-wrap').style.display='block';
+  document.getElementById('result-wrap').innerHTML='<div class="loading-text">🔍 กำลังค้นหาข้อมูล...</div>';
+  fetch(GAS_URL+'?action=track&name='+encodeURIComponent(searchStr))
+    .then(function(r){return r.json();})
+    .then(function(data){
+      btn.disabled=false;btn.textContent='ตรวจสอบสถานะ';
+      renderResults(data.orders,name);
+    })
+    .catch(function(){
+      btn.disabled=false;btn.textContent='ตรวจสอบสถานะ';
+      document.getElementById('result-wrap').innerHTML='<div class="not-found"><span class="nf-icon">⚠️</span><p>เชื่อมต่อไม่สำเร็จ กรุณาลองใหม่<br>หรือติดต่อผ่านเพจ</p></div>';
+    });
+}
+document.getElementById('search-fname').addEventListener('keypress',function(e){if(e.key==='Enter')doSearch();});
+document.getElementById('search-lname').addEventListener('keypress',function(e){if(e.key==='Enter')doSearch();});
+</script>
+</body>
+</html>
